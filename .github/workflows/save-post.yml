@@ -12,20 +12,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Create new branch
-        run: git checkout -b new-post-branch
-
       - name: Generate post file
         run: echo '${{ github.event.head_commit.message }}' > posts/new-post.json
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
 
       - name: Commit files
         run: |
           git add posts/new-post.json
-          git -c user.name='GitHub Actions' -c user.email='actions@github.com' commit -m "Add new post"
-          git push origin new-post-branch
+          git commit -m "Add new post"
+          git push origin main
 
-      - name: Merge branch to main
-        uses: pullreminders/merge-action@v4
-        with:
-          branch: new-post-branch
-          github_token: ${{ secrets.GITHUB_TOKEN }}
