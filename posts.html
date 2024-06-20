@@ -3,28 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic Forum</title>
+    <title>Forum Posts</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to the Basic Forum</h1>
-        <form id="post-form">
-            <textarea id="post-content" placeholder="Write your post here..."></textarea>
-            <button type="submit">Post</button>
-        </form>
-        <div id="posts-container">
+        <h1>Forum Posts</h1>
+        <div id="posts-list">
             <!-- Posts will be dynamically added here -->
         </div>
-        
-        <!-- Button to redirect to posts.html -->
-        <button onclick="redirectToPosts()">View Posts</button>
     </div>
 
     <script src="script.js"></script>
     <script>
-        function redirectToPosts() {
-            window.location.href = 'posts.html';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Functionality to fetch and display posts here
+            fetchPosts();
+        });
+
+        async function fetchPosts() {
+            try {
+                const response = await fetch('/posts');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch posts');
+                }
+                const posts = await response.json();
+                displayPosts(posts);
+            } catch (error) {
+                console.error('Error fetching posts:', error);
+            }
+        }
+
+        function displayPosts(posts) {
+            const postsList = document.getElementById('posts-list');
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.innerHTML = `<h3>${post.title}</h3><p>${post.content}</p>`;
+                postsList.appendChild(postElement);
+            });
         }
     </script>
 </body>
