@@ -26,25 +26,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function savePost(post) {
-        const posts = JSON.parse(localStorage.getItem('posts')) || [];
-        posts.push(post);
-        localStorage.setItem('posts', JSON.stringify(posts));
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/save-post', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(post));
     }
 
     function displayPosts() {
-        const posts = JSON.parse(localStorage.getItem('posts')) || [];
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/posts/all', true);
 
-        postsContainer.innerHTML = '';
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 400) {
+                const posts = JSON.parse(xhr.responseText);
+                postsContainer.innerHTML = '';
 
-        posts.forEach(post => {
-            const postElement = document.createElement('div');
-            postElement.classList.add('post');
-            postElement.innerHTML = `
-                <p>${post.content}</p>
-                <small>${post.timestamp}</small>
-            `;
-            postsContainer.appendChild(postElement);
-        });
+                posts.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.classList.add('post');
+                    postElement.innerHTML = `
+                        <p>${post.content}</p>
+                        <small>${post.timestamp}</small>
+                    `;
+                    postsContainer.appendChild(postElement);
+                });
+            } else {
+                console.error('Failed to load posts');
+            }
+        };
+
+        xhr.send();
     }
 
     displayPosts();
