@@ -23,6 +23,39 @@
 
     <script src="script.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const postForm = document.getElementById('post-form');
+            postForm.addEventListener('submit', handleFormSubmit);
+        });
+
+        function handleFormSubmit(event) {
+            event.preventDefault(); // Prevent form submission
+            const postContent = document.getElementById('post-content').value;
+            createPostFile(postContent);
+        }
+
+        async function createPostFile(content) {
+            try {
+                const filename = `post_${Date.now()}.txt`; // Generate unique filename
+                const response = await fetch(`/create-post/${filename}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content })
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to create post');
+                }
+                alert('Post created successfully!');
+                // Optionally clear the form or update UI
+                document.getElementById('post-content').value = '';
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Failed to create post. Please try again.');
+            }
+        }
+
         function redirectToPosts() {
             window.location.href = 'posts.html';
         }
