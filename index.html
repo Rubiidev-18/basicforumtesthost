@@ -45,10 +45,10 @@
                 const filename = `posts/post_${postId}.txt`;
                 const fileContent = postContent;
 
-                const response = await fetch(`https://api.github.com/repos/USERNAME/REPOSITORY/contents/${filename}`, {
+                const response = await fetch(`https://api.github.com/repos/LNLenost/basicforumtest/contents/${filename}`, {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token YOUR_GITHUB_TOKEN`,
+                        'Authorization': `token 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`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
