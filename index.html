@@ -1,4 +1,4 @@
-# i hope this works
+# 1.0.0
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,23 +32,35 @@
             loadPosts();
         });
 
-        function handleFormSubmit(event) {
+        async function handleFormSubmit(event) {
             event.preventDefault(); // Prevent form submission
             const postContent = document.getElementById('post-content').value;
-            savePost(postContent);
-        }
+            const postId = Date.now().toString(); // Generate unique ID for post (timestamp-based)
+            
+            // Save post to File System using File System Access API
+            try {
+                const fileHandle = await window.showSaveFilePicker({
+                    suggestedName: `post_${postId}.txt`,
+                    types: [{
+                        description: 'Text file',
+                        accept: {
+                            'text/plain': ['.txt'],
+                        },
+                    }],
+                });
+                
+                const writable = await fileHandle.createWritable();
+                await writable.write(postContent);
+                await writable.close();
 
-        function savePost(content) {
-            // Generate unique ID for post (timestamp-based in this example)
-            const postId = Date.now().toString();
-            const post = { id: postId, content: content };
+                // Optionally, update UI or notify user
+                alert('Post created successfully!');
+                document.getElementById('post-content').value = ''; // Clear textarea
 
-            // Save post to localStorage or IndexedDB
-            localStorage.setItem(`post_${postId}`, JSON.stringify(post));
-
-            // Optionally, display the post immediately (not necessary if redirecting)
-            alert('Post created successfully!');
-            document.getElementById('post-content').value = ''; // Clear textarea
+            } catch (err) {
+                console.error('Error saving file:', err);
+                alert('Failed to save post. Please try again.');
+            }
         }
 
         function redirectToPosts() {
